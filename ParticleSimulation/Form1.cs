@@ -62,21 +62,11 @@ namespace ParticleSimulation
             boxZ = new List<int>();
             boxSize = new List<int>();
 
-            /*
-            // ------  RUN TEST ------ //
-            List<int> parameters = new List<int> { 50, 2000, 70 };
-            Thread th = new Thread(new ParameterizedThreadStart(runTest), 10000000);
-            th.Start(parameters);
-
-            th.Join();
-
-            // ------  RUN TEST ------ //
-            */
             int nparticles = 250;
             firstGen = true;
             
             sim = new Sim();
-            sim.init(nparticles, this);
+            sim.init(this);
 
             bm = new Bitmap(1000, 1000);
             gbm = Graphics.FromImage(bm);
@@ -102,7 +92,7 @@ namespace ParticleSimulation
                 sw.Reset();
                 sw.Start();
                 sim = new Sim();
-                sim.init(i, this);
+                sim.init(this);
                 sim.run(150);
                 sw.Stop();
                 np.Add(i);
@@ -120,12 +110,11 @@ namespace ParticleSimulation
         {
             DoubleBuffered = true;
             bool drawLine = false;
-            Rectangle ellipseBounds = new Rectangle(x, y, 3, 3); //like in your code sample
+            Rectangle ellipseBounds = new Rectangle(x, y, 3, 3); 
 
             int steps = 10;
             sim.run(steps);
             
-            //gbm.Clear(Color.White);
 
             using (SolidBrush brush = new SolidBrush(Color.Black))
             {
@@ -139,34 +128,9 @@ namespace ParticleSimulation
                         ellipseBounds.X = particlePlots[i].Item1;
                         ellipseBounds.Y = particlePlots[i].Item2;
                         brush.Color = particlePlots[i].Item3;
-                        gbm.FillEllipse(brush, ellipseBounds); //for example, do it before drawing lines.
+                        gbm.FillEllipse(brush, ellipseBounds);
                     }
                 }
-                else
-                {
-                    /*
-                    for (int i = 0; i < xpos.Count; i++)
-                    {
-                        Point p1, p2;
-                        Console.WriteLine("bitch;");
-                        if (firstGen)
-                        {
-                            p1 = new Point(xpos[i], ypos[i]);
-                        }
-                        else
-                        {
-                            p1 = new Point(lastxpos[i], lastypos[i]);
-                        }
-
-                        p2 = new Point(xpos[i], ypos[i]);
-                        gbm.DrawLine(pen, p1, p2);
-
-                        lastxpos[i] = xpos[i];
-                        lastypos[i] = ypos[i];
-                    }
-                    */
-                }
-
 
                 particlePlots.Clear();
                 firstGen = false;
