@@ -151,6 +151,7 @@ namespace ParticleSimulation
                     }
 
                     if (t == timesteps - 1 && plot)
+
                     {
                         for (int i = 0; i < n; i++)
                         {
