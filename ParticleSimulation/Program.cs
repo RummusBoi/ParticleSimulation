@@ -150,6 +150,7 @@ namespace ParticleSimulation
                         });
                     }
 
+
                     if (t == timesteps - 1 && plot)
 
                     {
