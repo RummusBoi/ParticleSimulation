@@ -15,7 +15,6 @@ namespace ParticleSimulation
 {
     public partial class Form1 : Form
     {
-        int x, y;
         double cameraDist, rotation;
 
         static double timeElapsed;
@@ -25,12 +24,9 @@ namespace ParticleSimulation
 
         public static int maxX, minX, maxY, minY, maxZ, minZ;
 
-        List<int> boxX;
-        List<int> boxY;
-        List<int> boxSize;
-        List<int> boxZ;
-        List<int> xcom;
-        List<int> ycom;
+        List<(int X, int Y, int Z, int Size)> boxCoords;
+        List<(int X, int Y)> com;
+        
 
         bool firstGen;
         int n;
@@ -46,23 +42,15 @@ namespace ParticleSimulation
             Form1.timeStep = 0;
             InitializeComponent();
             Size = new System.Drawing.Size(1000, 1000);
-            x = 200;
-            y = 100;
             cameraDist = 10000;
             rotation = 0;
 
             particlePlots = new List<Tuple<int, int, Color>>();
 
-            xcom = new List<int>();
-            ycom = new List<int>();
-            
+            com = new List<(int, int)>();
 
-            boxX = new List<int>();
-            boxY = new List<int>();
-            boxZ = new List<int>();
-            boxSize = new List<int>();
+            boxCoords = new List<(int, int, int, int)>();
 
-            int nparticles = 250;
             firstGen = true;
             
             sim = new Sim();
@@ -76,60 +64,24 @@ namespace ParticleSimulation
             sw.Start();
         }
 
-        private void runTest (object parameters)
-        {
-            List<int> p = (List<int>)parameters;
-            int start = p[0];
-            int end = p[1];
-            int interval = p[2];
-            
-            sw = new Stopwatch();
-
-            List<int> np = new List<int>();
-            List<int> times = new List<int>();
-
-            for (int i = start; i <= end; i += interval) {
-                sw.Reset();
-                sw.Start();
-                sim = new Sim();
-                sim.init(this);
-                sim.run(150);
-                sw.Stop();
-                np.Add(i);
-                times.Add((int)sw.ElapsedMilliseconds);
-                Console.WriteLine("Finished " + i + " particles in " + sw.ElapsedMilliseconds + " milliseconds.");
-            }
-
-            Console.WriteLine("Particles:");
-            np.ForEach(o => Console.WriteLine(o));
-            Console.WriteLine("Times:");
-            times.ForEach(o => Console.WriteLine(o));
-        }
-
         private void Form1_Paint_1(object sender, PaintEventArgs e)
         {
             DoubleBuffered = true;
-            bool drawLine = false;
-            Rectangle ellipseBounds = new Rectangle(x, y, 3, 3); 
+            Rectangle ellipseBounds = new Rectangle(0, 0, 3, 3);
 
-            int steps = 10;
-            sim.run(steps);
             
+            sim.run(SimConstants.STEPS_PER_FRAME);
 
             using (SolidBrush brush = new SolidBrush(Color.Black))
             {
-
                 Pen pen = new Pen(brush);
-                if (!drawLine)
+                gbm.Clear(Color.White);
+                for (int i = 0; i < particlePlots.Count; i++)
                 {
-                    gbm.Clear(Color.White);
-                    for (int i = 0; i < particlePlots.Count; i++)
-                    {
-                        ellipseBounds.X = particlePlots[i].Item1;
-                        ellipseBounds.Y = particlePlots[i].Item2;
-                        brush.Color = particlePlots[i].Item3;
-                        gbm.FillEllipse(brush, ellipseBounds);
-                    }
+                    ellipseBounds.X = particlePlots[i].Item1;
+                    ellipseBounds.Y = particlePlots[i].Item2;
+                    brush.Color = particlePlots[i].Item3;
+                    gbm.FillEllipse(brush, ellipseBounds);
                 }
 
                 particlePlots.Clear();
@@ -138,12 +90,12 @@ namespace ParticleSimulation
 
             using (Brush brush = new SolidBrush(Color.Blue))
             {
-                for (int i = 0; i < boxX.Count; i++)
+                for (int i = 0; i < boxCoords.Count; i++)
                 {
                     Pen pen = new Pen(brush);
 
                     double p1x, p1y, p2x, p2y, p3x, p3y, p4x, p4y, p5x, p5y, p6x, p6y, p7x, p7y, p8x, p8y;
-                    int x = boxX[i], y = boxY[i], z = boxZ[i], s = boxSize[i];
+                    int x = boxCoords[i].X, y = boxCoords[i].Y, z = boxCoords[i].Z, s = boxCoords[i].Size;
 
                     
                     projectPoint(x, y, z, rotation, out p1x, out p1y);
@@ -169,12 +121,9 @@ namespace ParticleSimulation
                     gbm.DrawLine(pen, (float)p2x, (float)p2y, (float)p6x, (float)p6y);
                     gbm.DrawLine(pen, (float)p3x, (float)p3y, (float)p7x, (float)p7y);
                     gbm.DrawLine(pen, (float)p4x, (float)p4y, (float)p8x, (float)p8y);
-                    
                 }
-                boxX.Clear();
-                boxY.Clear();
-                boxZ.Clear();
-                boxSize.Clear();
+
+                boxCoords.Clear();
 
                 for (int i = 0; i < xcom.Count; i++)
                 {
@@ -189,7 +138,7 @@ namespace ParticleSimulation
             
             Form1.timeElapsed += sw.ElapsedMilliseconds;
             Form1.timeStep += 1;
-            rotation += 0.005;
+            rotation += SimConstants.ROTATION_SPEED;
         }
 
         public void drawParticle (int x, int y, int z, Color color)
@@ -213,15 +162,11 @@ namespace ParticleSimulation
         public void drawBox(int x, int y, int z, int size)
         {
             //add points to buffer
-            boxX.Add(x);
-            boxY.Add(y);
-            boxZ.Add(z);
-            boxSize.Add(size);
+            boxCoords.Add((x, y, z, size));
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            x += 1;
             Invalidate();
         }
 

@@ -64,7 +64,7 @@ namespace ParticleSimulation
                 });
                 Parallel.ForEach(integerList, i =>
                 {
-                    particles[i].integrate(SimConstants.DT);
+                    particles[i].integrate();
                 });
 
                 if (t == timesteps - 1)
