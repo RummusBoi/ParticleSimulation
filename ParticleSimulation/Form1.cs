@@ -17,9 +17,6 @@ namespace ParticleSimulation
     {
         double cameraDist, rotation;
 
-        static double timeElapsed;
-        static int timeStep;
-
         List<Tuple<int, int, Color>> particlePlots;
 
         public static int maxX, minX, maxY, minY, maxZ, minZ;
@@ -28,20 +25,15 @@ namespace ParticleSimulation
         List<(int X, int Y)> com;
         
 
-        bool firstGen;
-        int n;
         Sim sim;
         Bitmap bm;
         Graphics gbm;
-        Stopwatch sw;
         
 
         public Form1()
         {
-            Form1.timeElapsed = 0;
-            Form1.timeStep = 0;
             InitializeComponent();
-            Size = new System.Drawing.Size(1000, 1000);
+            Size = new System.Drawing.Size(SimConstants.IMG_WIDTH, SimConstants.IMG_HEIGHT);
             cameraDist = 10000;
             rotation = 0;
 
@@ -50,18 +42,12 @@ namespace ParticleSimulation
             com = new List<(int, int)>();
 
             boxCoords = new List<(int, int, int, int)>();
-
-            firstGen = true;
             
             sim = new Sim();
             sim.init(this);
 
-            bm = new Bitmap(1000, 1000);
+            bm = new Bitmap(SimConstants.IMG_WIDTH, SimConstants.IMG_HEIGHT);
             gbm = Graphics.FromImage(bm);
-
-            n = 0;
-            sw = new Stopwatch();
-            sw.Start();
         }
 
         private void Form1_Paint_1(object sender, PaintEventArgs e)
@@ -85,7 +71,6 @@ namespace ParticleSimulation
                 }
 
                 particlePlots.Clear();
-                firstGen = false;
             }
 
             using (Brush brush = new SolidBrush(Color.Blue))
@@ -125,19 +110,16 @@ namespace ParticleSimulation
 
                 boxCoords.Clear();
 
-                for (int i = 0; i < xcom.Count; i++)
+                for (int i = 0; i < com.Count; i++)
                 {
                     Pen pen = new Pen(Color.Red);
-                    gbm.DrawEllipse(pen, xcom[i], ycom[i], 2, 2);
+                    gbm.DrawEllipse(pen, com[i].X, com[i].Y, 2, 2);
                 }
-                xcom.Clear();
-                ycom.Clear();
+                com.Clear();
             }
 
             e.Graphics.DrawImage(bm, 0, 0);
-            
-            Form1.timeElapsed += sw.ElapsedMilliseconds;
-            Form1.timeStep += 1;
+
             rotation += SimConstants.ROTATION_SPEED;
         }
 
@@ -154,9 +136,8 @@ namespace ParticleSimulation
         public void drawCOM (int x, int y, int z)
         {
             double xp, yp;
-            projectPoint((double)x, (double)y, (double)z, rotation, out xp, out yp);
-            xcom.Add((int)xp);
-            ycom.Add((int)yp);
+            projectPoint(x, y, z, rotation, out xp, out yp);
+            com.Add(((int)xp, (int)yp));
         }
 
         public void drawBox(int x, int y, int z, int size)

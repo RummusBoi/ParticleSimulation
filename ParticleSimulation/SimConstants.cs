@@ -10,6 +10,9 @@ public class SimConstants
     public static int PARTICLES_PER_BOX = 1;
     public static int STEPS_PER_FRAME = 5;
     public static double ROTATION_SPEED = 0.005;
+    public static int IMG_WIDTH = 1000;
+    public static int IMG_HEIGHT = 1000;
+    public static int PARTICLE_MASS = (int)Math.Pow(10, 18);
 
 
     public SimConstants() { return;  }
