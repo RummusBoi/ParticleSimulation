@@ -62,7 +62,7 @@ namespace ParticleSimulation
             }
 
             //generates the first generation octree
-            root = constructTree(SimConstants.SIMSIZE, 1);
+            root = constructTree(SimConstants.SIMSIZE, SimConstants.PARTICLES_PER_BOX);
         }
 
         /**
@@ -92,9 +92,7 @@ namespace ParticleSimulation
                 {
                     particles[i].integrate();
                 });
-
-                Console.WriteLine(particles[0].acc[0]);
-
+                
                 //if t is the final timestep, plot each particle and the root's size to the Windows Form
                 if (t == timesteps - 1)
                 {
@@ -139,6 +137,7 @@ namespace ParticleSimulation
 
         public void calcForcesBarnesHut (Particle p, Node root)
         {
+            
             forceRecursive(p, root);
         }
 
@@ -191,7 +190,7 @@ namespace ParticleSimulation
 
                     double factor = 6.67 * Math.Pow(10, -11) * p1.mass * p.mass;
 
-                    double F = factor / pdist / pdist - factor / (dist*dist*dist*dist*dist* dist * dist);
+                    double F = factor / pdist / pdist;
                     double fx = F * pdx / pdist;
                     double fy = F * pdy / pdist;
                     double fz = F * pdz / pdist;
@@ -246,6 +245,26 @@ namespace ParticleSimulation
                 pos[i] = pos[i] + vel[i] * SimConstants.DT;
                 
                 acc[i] = 0;
+            }
+
+            correctOutOfBounds();
+        }
+
+        private void correctOutOfBounds()
+        {
+            if (pos[0] > SimConstants.SIMSIZE || pos[0] < 0)
+            {
+                vel[0] = -vel[0];
+            }
+
+            if (pos[1] > SimConstants.SIMSIZE || pos[1] < 0)
+            {
+                vel[1] = -vel[1];
+            }
+
+            if (pos[2] > SimConstants.SIMSIZE || pos[2] < 0)
+            {
+                vel[2] = -vel[2];
             }
         }
     }
