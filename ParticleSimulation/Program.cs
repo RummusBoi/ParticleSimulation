@@ -85,29 +85,6 @@ namespace ParticleSimulation
             root = constructTree(Sim.simSize, 2);
         }
 
-        public void threadRun (object parameters)
-        {
-
-            List<int> p = (List<int>)parameters;
-            int start = p[0];
-            int end = p[1];
-            int id = p[2];
-
-            while(true)
-            {
-                if (threadsrun[id] == true)
-                {
-                    for (int i = start; i < end; i++)
-                    {
-                        calcForcesBarnesHut(particles[i], root);
-                    }
-                    threadsrun[id] = false;
-                }
-            }
-
-            
-        }
-
         public void run(int timesteps)
         {
             bool compare = false;
