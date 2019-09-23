@@ -15,8 +15,7 @@ namespace ParticleSimulation
 {
     public partial class Form1 : Form
     {
-        double cameraDist, rotation;
-
+        double rotation;
         List<Tuple<int, int, Color>> particlePlots;
 
         public static int maxX, minX, maxY, minY, maxZ, minZ;
@@ -34,7 +33,6 @@ namespace ParticleSimulation
         {
             InitializeComponent();
             Size = new System.Drawing.Size(SimConstants.IMG_WIDTH, SimConstants.IMG_HEIGHT);
-            cameraDist = 10000;
             rotation = 0;
 
             particlePlots = new List<Tuple<int, int, Color>>();
@@ -44,7 +42,7 @@ namespace ParticleSimulation
             boxCoords = new List<(int, int, int, int)>();
             
             sim = new Sim();
-            sim.init(this);
+            sim.init(this, new BarnesHutForceSolver());
 
             bm = new Bitmap(SimConstants.IMG_WIDTH, SimConstants.IMG_HEIGHT);
             gbm = Graphics.FromImage(bm);
@@ -153,23 +151,33 @@ namespace ParticleSimulation
 
         private void projectPoint(double x, double y, double z, double rotation, out double xp, out double yp)
         {
-            double screenOrigoDist = cameraDist / 2;
-            double shiftX = 500;
-            double shiftY = 300;
+            double cameraDist = 7000;
+            double camToScreenDist = 500;
 
-            x -= SimConstants.SIMSIZE / 2.0;
-            y -= SimConstants.SIMSIZE / 2.0;
-            z -= SimConstants.SIMSIZE / 2.0;
+            double cameraX = SimConstants.SIMSIZE / 2;
+            double cameraY = SimConstants.SIMSIZE / 2;
+            double cameraZ = -cameraDist;
+            
+            x -= SimConstants.SIMSIZE / 2;
+            y -= SimConstants.SIMSIZE / 2;
+            z -= SimConstants.SIMSIZE / 2;
+            
+            double tmpx = Math.Cos(rotation) * x + Math.Sin(rotation) * z;
+            z = -Math.Sin(rotation) * x + Math.Cos(rotation) * z;
+            x = tmpx;
+            
+            x += SimConstants.SIMSIZE / 2;
+            y += SimConstants.SIMSIZE / 2;
+            z += SimConstants.SIMSIZE / 2;
+            
+            //update relative position of particle:
+            x -= cameraX;
+            y -= cameraY;
+            z -= cameraZ;
 
-            double xr = Math.Cos(rotation) * x - Math.Sin(rotation) * z;
-            double zr = Math.Sin(rotation) * x + Math.Cos(rotation) * z;
 
-            x += SimConstants.SIMSIZE / 2.0;
-            y += SimConstants.SIMSIZE / 2.0;
-            z += SimConstants.SIMSIZE / 2.0;
-
-            xp = ((zr + screenOrigoDist) / (zr + cameraDist + screenOrigoDist)) * xr + shiftX;
-            yp = ((zr + screenOrigoDist) / (zr + cameraDist + screenOrigoDist)) * y + shiftY;
+            xp = (camToScreenDist) / z * x + SimConstants.IMG_WIDTH / 2;
+            yp = (camToScreenDist) / z * y + SimConstants.IMG_HEIGHT / 2;
         }
     }
 }
