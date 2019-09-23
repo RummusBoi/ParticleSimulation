@@ -77,7 +77,7 @@ namespace ParticleSimulation
             for (int t = 0; t < timesteps; t++)
             {
                 //constructs octree and calculates center of mass for all nodes
-                root = constructTree(SimConstants.SIMSIZE, 1);
+                root = constructTree(SimConstants.SIMSIZE, SimConstants.PARTICLES_PER_BOX);
                 root.calcCOMRecursive();
 
                 //uses multiple threads to approximate the force upon each particle
@@ -92,6 +92,8 @@ namespace ParticleSimulation
                 {
                     particles[i].integrate();
                 });
+
+                Console.WriteLine(particles[0].acc[0]);
 
                 //if t is the final timestep, plot each particle and the root's size to the Windows Form
                 if (t == timesteps - 1)

@@ -157,16 +157,16 @@ namespace ParticleSimulation
             double shiftX = 500;
             double shiftY = 300;
 
-            x -= Sim.simSize / 2.0;
-            y -= Sim.simSize / 2.0;
-            z -= Sim.simSize / 2.0;
+            x -= SimConstants.SIMSIZE / 2.0;
+            y -= SimConstants.SIMSIZE / 2.0;
+            z -= SimConstants.SIMSIZE / 2.0;
 
             double xr = Math.Cos(rotation) * x - Math.Sin(rotation) * z;
             double zr = Math.Sin(rotation) * x + Math.Cos(rotation) * z;
 
-            x += Sim.simSize / 2.0;
-            y += Sim.simSize / 2.0;
-            z += Sim.simSize / 2.0;
+            x += SimConstants.SIMSIZE / 2.0;
+            y += SimConstants.SIMSIZE / 2.0;
+            z += SimConstants.SIMSIZE / 2.0;
 
             xp = ((zr + screenOrigoDist) / (zr + cameraDist + screenOrigoDist)) * xr + shiftX;
             yp = ((zr + screenOrigoDist) / (zr + cameraDist + screenOrigoDist)) * y + shiftY;
