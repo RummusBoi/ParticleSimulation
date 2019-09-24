@@ -36,17 +36,17 @@ namespace ParticleSimulation
         {
             if (p.pos[0] > SimConstants.SIMSIZE || p.pos[0] < 0)
             {
-                p.vel[0] = -p.vel[0];
+                p.vel[0] = -p.vel[0]*1;
             }
 
             if (p.pos[1] > SimConstants.SIMSIZE || p.pos[1] < 0)
             {
-                p.vel[1] = -p.vel[1];
+                p.vel[1] = -p.vel[1] * 1;
             }
 
             if (p.pos[2] > SimConstants.SIMSIZE || p.pos[2] < 0)
             {
-                p.vel[2] = -p.vel[2];
+                p.vel[2] = -p.vel[2] * 1;
             }
         }
 
@@ -86,7 +86,7 @@ namespace ParticleSimulation
             {
                 root.recursiveAddChild(p, particlesPerBox);
             }
-
+            root.calcCOMRecursive();
             return root;
         }
 
