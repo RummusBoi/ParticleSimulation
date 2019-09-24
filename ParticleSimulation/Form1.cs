@@ -51,7 +51,7 @@ namespace ParticleSimulation
         private void Form1_Paint_1(object sender, PaintEventArgs e)
         {
             DoubleBuffered = true;
-            Rectangle ellipseBounds = new Rectangle(0, 0, 3, 3);
+            Rectangle ellipseBounds = new Rectangle(0, 0, 1, 1);
 
             
             sim.run(SimConstants.STEPS_PER_FRAME);
@@ -65,7 +65,8 @@ namespace ParticleSimulation
                     ellipseBounds.X = particlePlots[i].Item1;
                     ellipseBounds.Y = particlePlots[i].Item2;
                     brush.Color = particlePlots[i].Item3;
-                    gbm.FillEllipse(brush, ellipseBounds);
+
+                    gbm.FillRectangle(brush, ellipseBounds);
                 }
 
                 particlePlots.Clear();
@@ -152,7 +153,7 @@ namespace ParticleSimulation
         private void projectPoint(double x, double y, double z, double rotation, out double xp, out double yp)
         {
             double cameraDist = 7000;
-            double camToScreenDist = 500;
+            double camToScreenDist = 1000;
 
             double cameraX = SimConstants.SIMSIZE / 2;
             double cameraY = SimConstants.SIMSIZE / 2;
