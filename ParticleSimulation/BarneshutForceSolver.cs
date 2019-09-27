@@ -9,7 +9,13 @@ namespace ParticleSimulation
     class BarnesHutForceSolver : ForceSolver
     {
         public BarnesHutForceSolver() { }
-        //Leapfrog integrator function
+
+        /*
+         * @param particles the list of particles that should be integrated.
+         * @param timestepSize the size of each timestep.
+         * @param bounds the size of the simulation
+         */
+
         public void integrateAll(List<Particle> particles, double timestepSize, double bounds)
         {
             List<int> integerList = Enumerable.Range(0, particles.Count).ToList();
@@ -19,7 +25,13 @@ namespace ParticleSimulation
             });          
         }
 
-        private void integrate(Particle p, double timestepSize, double bounds)
+		/*
+         * @param p the particle to be integrated.
+         * @param timestepSize the size of each timestep.
+         * @param bounds the size of the simulation.
+         */
+
+		private void integrate(Particle p, double timestepSize, double bounds)
         {
             for (int i = 0; i < 3; i++)
             {
@@ -31,6 +43,13 @@ namespace ParticleSimulation
 
             correctOutOfBounds(p, bounds);
         }
+
+        /*
+         * @param p the particle whose position is to be checked.
+         * @param bounds the size of the simulation. 
+         * Function that determines what happens when a particle goes out of bounds.
+         * In this case, the particles simply bounce off the edges of the box.
+         */
 
         private void correctOutOfBounds(Particle p, double bounds)
         {
@@ -91,7 +110,13 @@ namespace ParticleSimulation
         }
 
         /*
-         *    --------- COMMENTS NEEDED ------------
+         * @param p the force from all other particles in the node n (and all children nodes) on p will be calculated, and the acceleration
+         *          of p will be set accordingly.
+         * @param n the root node of the tree to be traversed.
+         *
+         * This is the recursive function that calculates the force of the entire tree, n, on the particle p. On average, only log(n) nodes
+         * will be traversed when the function is called, which means that entire timestep can be calculated in O(n log n) time, since there
+         * are n particles.
          */
         private void forceRecursive(Particle p, Node n)
         {
@@ -103,15 +128,17 @@ namespace ParticleSimulation
 
 
             bool cond = n.size / dist < SimConstants.BARNES_HUT_DELTA;
-            //if cond is true, the node is sufficiently far away
 
+            //if cond is true, the node is sufficiently far away
             if (cond)
             {
+                //calculate the force between p and n.
                 double F = 6.67 * Math.Pow(10, -11) * n.mass * p.mass / dist / dist;
                 double fx = F * dx / dist;
                 double fy = F * dy / dist;
                 double fz = F * dz / dist;
 
+                //update the acceleration of p
                 p.acc[0] += fx / p.mass;
                 p.acc[1] += fy / p.mass;
                 p.acc[2] += fz / p.mass;
